@@ -4,18 +4,26 @@ import { useState, useEffect } from 'react'
 import { getRecommendations } from '@/lib/supabase'
 import SearchInterface from '@/components/SearchInterface'
 import { MapPin } from 'lucide-react'
+import type {
+  Venue,
+  SearchParams as ISearchParams,
+  SearchUpdates,
+  RecommendationsResponse,
+  LatLng,
+} from '@/types/search'
 
 export default function Home() {
-  const [venues, setVenues] = useState<any[]>([])
+  const [venues, setVenues] = useState<Venue[]>([])
   const [loading, setLoading] = useState(false)
   const [locationError, setLocationError] = useState<string | null>(null)
-  const [searchParams, setSearchParams] = useState({
+
+  const [searchParams, setSearchParams] = useState<ISearchParams>({
     location: { lat: 43.65107, lng: -79.347015 }, // Toronto fallback
     radius_km: 100,
     budget_max: '$$$',
-    chips: [] as string[],
-    category: null as string | null,
-    query: undefined as string | undefined,
+    chips: [],
+    category: null,
+    query: undefined,
   })
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -26,7 +34,7 @@ export default function Home() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           console.log('Got user location:', position.coords)
-          const newLocation = {
+          const newLocation: LatLng = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           }
@@ -46,20 +54,21 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const fetchRecommendations = async (params = searchParams) => {
+  const fetchRecommendations = async (params: ISearchParams = searchParams) => {
     setLoading(true)
     console.log('Fetching with params:', params)
     try {
-      const data = await getRecommendations({
+      const data = (await getRecommendations({
         location: params.location,
         radius_km: params.radius_km,
         budget_max: params.budget_max,
         chips: params.chips,
-        category: params.category || undefined,
-        query: params.query || undefined,
-      })
+        category: params.category ?? undefined,
+        query: params.query ?? undefined,
+      })) as RecommendationsResponse
+
       console.log('Data received:', data)
-      setVenues(data.results || [])
+      setVenues(data?.results ?? [])
     } catch (error) {
       console.error('Error fetching recommendations:', error)
     } finally {
@@ -67,20 +76,21 @@ export default function Home() {
     }
   }
 
-  const handleSearchUpdate = (updates: any) => {
+  const handleSearchUpdate = (updates: SearchUpdates) => {
     if (updates.category !== undefined) {
       if (updates.category === activeCategory) {
         setActiveCategory(null)
         updates.category = null
       } else {
-        setActiveCategory(updates.category)
+        setActiveCategory(updates.category ?? null)
       }
     }
+
     if (updates.query !== undefined) {
       console.log('Search query:', updates.query)
     }
 
-    const newParams = { ...searchParams, ...updates }
+    const newParams: ISearchParams = { ...searchParams, ...updates }
     setSearchParams(newParams)
     fetchRecommendations(newParams)
   }
@@ -130,11 +140,11 @@ export default function Home() {
                         )}
                       </div>
 
-                      {venue.rating && (
+                      {typeof venue.rating === 'number' && (
                         <div className="flex items-center gap-1 mb-2">
                           <span className="text-yellow-500">⭐</span>
                           <span>{venue.rating}</span>
-                          {venue.review_count && (
+                          {typeof venue.review_count === 'number' && (
                             <span className="text-gray-500 text-sm">({venue.review_count} reviews)</span>
                           )}
                         </div>

@@ -5,17 +5,18 @@ import { SearchBar } from './SearchBar'
 import { CategoryGrid } from './CategoryGrid'
 import { FilterChips } from './FilterChips'
 import { RadiusSlider } from './RadiusSlider'
+import type { SearchUpdates, BudgetTier } from '@/types/search'
 
 interface SearchInterfaceProps {
-  onSearch: (params: any) => void
+  onSearch: (updates: SearchUpdates) => void
   activeCategory?: string | null
 }
 
 export default function SearchInterface({ onSearch, activeCategory }: SearchInterfaceProps) {
-  const [currentRadius, setCurrentRadius] = useState(10)
+  const [currentRadius, setCurrentRadius] = useState<number>(10)
 
-  const handleSearch = (query: string, location: string) => {
-    console.log('Search triggered:', query, location)
+  const handleSearch = (query: string, _location: string) => {
+    console.log('Search triggered:', query, _location)
     onSearch({ query })
   }
 
@@ -26,16 +27,18 @@ export default function SearchInterface({ onSearch, activeCategory }: SearchInte
 
   const handleFiltersChange = (filters: string[]) => {
     console.log('Filters changed:', filters)
-    
-    // Handle price filters
-    const priceFilter = filters.find(f => ['$', '$$', '$$$'].includes(f))
-    
-    // Handle other chips
-    const chips = filters.filter(f => !['$', '$$', '$$$'].includes(f))
-    
-    onSearch({ 
+
+    const priceOptions: BudgetTier[] = ['$', '$$', '$$$', '$$$$']
+
+    const priceFilter = filters.find(
+      (f): f is BudgetTier => (priceOptions as string[]).includes(f)
+    )
+
+    const chips = filters.filter((f) => !priceOptions.includes(f as BudgetTier))
+
+    onSearch({
       chips,
-      budget_max: priceFilter || '$$$'
+      budget_max: priceFilter ?? '$$$',
     })
   }
 
@@ -48,15 +51,9 @@ export default function SearchInterface({ onSearch, activeCategory }: SearchInte
   return (
     <div className="space-y-6 bg-white rounded-lg shadow-lg p-6">
       <SearchBar onSearch={handleSearch} />
-      <CategoryGrid 
-        onCategorySelect={handleCategorySelect}
-        activeCategory={activeCategory}
-      />
+      <CategoryGrid onCategorySelect={handleCategorySelect} activeCategory={activeCategory} />
       <FilterChips onFiltersChange={handleFiltersChange} />
-      <RadiusSlider 
-        value={currentRadius}
-        onValueChange={handleRadiusChange}
-      />
+      <RadiusSlider value={currentRadius} onValueChange={handleRadiusChange} />
     </div>
   )
 }
