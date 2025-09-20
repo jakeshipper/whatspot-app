@@ -5,55 +5,74 @@ import { SearchBar } from './SearchBar'
 import { CategoryGrid } from './CategoryGrid'
 import { FilterChips } from './FilterChips'
 import { RadiusSlider } from './RadiusSlider'
-import type { SearchUpdates, BudgetTier } from '@/types/search'
+import type { SearchUpdates, BudgetTier, LatLng } from '@/types/search'
 
-interface SearchInterfaceProps {
+type Props = {
   onSearch: (updates: SearchUpdates) => void
   activeCategory?: string | null
+  location: LatLng
+  radius_km: number
 }
 
-export default function SearchInterface({ onSearch, activeCategory }: SearchInterfaceProps) {
-  const [currentRadius, setCurrentRadius] = useState<number>(10)
+export default function SearchInterface({ onSearch, activeCategory, location, radius_km }: Props) {
+  const [currentRadius, setCurrentRadius] = useState<number>(radius_km)
 
-  const handleSearch = (query: string, _location: string) => {
-    console.log('Search triggered:', query, _location)
-    onSearch({ query })
-  }
-
-  const handleCategorySelect = (category: string) => {
-    console.log('Category selected:', category)
-    onSearch({ category })
-  }
+  const handleSearch = (query: string, _location: string) => onSearch({ query })
+  const handleCategorySelect = (category: string) => onSearch({ category })
 
   const handleFiltersChange = (filters: string[]) => {
-    console.log('Filters changed:', filters)
-
     const priceOptions: BudgetTier[] = ['$', '$$', '$$$', '$$$$']
-
-    const priceFilter = filters.find(
-      (f): f is BudgetTier => (priceOptions as string[]).includes(f)
-    )
-
+    const priceFilter = filters.find((f): f is BudgetTier => (priceOptions as string[]).includes(f))
     const chips = filters.filter((f) => !priceOptions.includes(f as BudgetTier))
-
-    onSearch({
-      chips,
-      budget_max: priceFilter ?? '$$$',
-    })
+    onSearch({ chips, budget_max: priceFilter ?? '$$$' })
   }
 
-  const handleRadiusChange = (newRadius: number) => {
-    console.log('Radius changed:', newRadius)
-    setCurrentRadius(newRadius)
-    onSearch({ radius_km: newRadius })
+  const handleRadiusChange = (val: number) => {
+    setCurrentRadius(val)
+    onSearch({ radius_km: val })
+  }
+
+  const handleUseMyLocation = () => {
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => onSearch({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude } }),
+        () => { /* optional toast */ }
+      )
+    }
   }
 
   return (
-    <div className="space-y-6 bg-white rounded-lg shadow-lg p-6">
-      <SearchBar onSearch={handleSearch} />
-      <CategoryGrid onCategorySelect={handleCategorySelect} activeCategory={activeCategory} />
-      <FilterChips onFiltersChange={handleFiltersChange} />
-      <RadiusSlider value={currentRadius} onValueChange={handleRadiusChange} />
+    <div className="space-y-5">
+      {/* Prominent Search (strong glass) */}
+      <div className="glass-strong p-4 md:p-6">
+        <SearchBar onSearch={handleSearch} />
+      </div>
+
+      {/* Location bar directly under the Search */}
+      <div className="glass-panel px-4 py-3 flex items-center justify-between">
+        <div className="text-sm">
+          <span className="text-secondary">Current location:</span>{' '}
+          <span className="text-primary font-medium">
+            {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+          </span>
+        </div>
+        <button className="btn-primary" onClick={handleUseMyLocation}>Use my location</button>
+      </div>
+
+      {/* Category tiles (ensure vertical centering) */}
+      <div className="glass-panel p-4">
+        <CategoryGrid onCategorySelect={handleCategorySelect} activeCategory={activeCategory} />
+      </div>
+
+      {/* Filter chips */}
+      <div className="glass-panel p-4">
+        <FilterChips onFiltersChange={handleFiltersChange} />
+      </div>
+
+      {/* Radius control */}
+      <div className="glass-panel p-4">
+        <RadiusSlider value={currentRadius} onValueChange={handleRadiusChange} />
+      </div>
     </div>
   )
 }

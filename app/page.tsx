@@ -104,7 +104,12 @@ export default function Home() {
           <div className="text-center text-sm text-gray-600 mb-4">{locationError}</div>
         )}
 
-        <SearchInterface onSearch={handleSearchUpdate} activeCategory={activeCategory} />
+<SearchInterface
+  onSearch={handleSearchUpdate}
+  activeCategory={activeCategory}
+  location={searchParams.location}
+  radius_km={searchParams.radius_km}
+/>
 
         <div className="mt-8">
           {loading ? (
@@ -126,7 +131,7 @@ export default function Home() {
                   return (
                     <div
                       key={venue.id}
-                      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
+                      className="glass-panel p-6 hover:shadow-xl transition-shadow"
                     >
                       <h3 className="text-xl font-semibold mb-2">{venue.name}</h3>
 
@@ -159,7 +164,7 @@ export default function Home() {
                           href={mapsUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                          className="link-accent text-sm flex items-center gap-1"
                           aria-label={`Get directions to ${venue.name}`}
                         >
                           <MapPin className="w-4 h-4" />
