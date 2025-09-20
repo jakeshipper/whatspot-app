@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 /* Theme tokens (Tailwind v4: CSS-based config) */
+/* @theme is a Tailwind CSS v4 directive */
 @theme inline {
   /* brand colors */
   --color-charcoal: #2d3748;
@@ -34,12 +35,14 @@
 /* Reusable UI helpers (glassmorphism + typography + accents) */
 @layer components {
   .glass-panel {
+    /* @apply is a Tailwind CSS directive */
     @apply rounded-2xl backdrop-blur-md;
     background: rgba(255,255,255,0.25);
     border: 1px solid rgba(255,255,255,0.40);
     box-shadow: var(--shadow-glass);
   }
   .glass-strong {
+    /* @apply is a Tailwind CSS directive */
     @apply rounded-2xl backdrop-blur-lg;
     background: rgba(255,255,255,0.35);
     border: 1px solid rgba(255,255,255,0.40);
@@ -51,6 +54,7 @@
   .text-muted     { color: rgba(45,55,72,0.60); }
 
   .btn-primary {
+    /* @apply is a Tailwind CSS directive */
     @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium text-white transition-colors;
     background-color: var(--color-fresh);
   }
