@@ -12,11 +12,8 @@ export type SearchParams = {
   query?: string
 }
 
-// What SearchInterface sends back to update the search params.
-// Partial is enough because UI often updates one or two fields.
 export type SearchUpdates = Partial<SearchParams>
 
-// Venue returned by your recommender
 export type Venue = {
   id: string | number
   name: string
@@ -31,7 +28,6 @@ export type Venue = {
   justification?: string
 }
 
-// API response shape
 export type RecommendationsResponse = {
   results: Venue[]
 }

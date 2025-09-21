@@ -1,25 +1,24 @@
-/* --- must be at the top in Tailwind v4 --- */
 @import "tailwindcss";
 
-/* Theme tokens (Tailwind v4: CSS-based config) */
-/* @theme is a Tailwind CSS v4 directive */
-@theme inline {
-  /* brand colors */
-  --color-charcoal: #2d3748;
-  --color-fresh: #72c677;   /* primary accent */
-  --color-success: #48bb78;
-  --color-error:   #e53e3e;
-
-  /* shadows */
-  --shadow-glass: 0 10px 30px rgba(0,0,0,0.12);
-}
-
-/* Optional: background corner colors as CSS vars for clarity */
+/* Global CSS variables (no Tailwind @theme needed) */
 :root {
+  /* Brand/text colors */
+  --color-charcoal: #2d3748;  /* primary text */
+  --color-fresh:    #72c677;  /* accent green */
+  --color-success:  #48bb78;
+  --color-error:    #e53e3e;
+
+  /* Shadows */
+  --shadow-glass: 0 10px 30px rgba(0,0,0,0.12);
+
+  /* Four-corner gradient colors */
   --sky:   #A7D8F4; /* top-left */
   --mint:  #D8F5E0; /* top-right */
   --blush: #FFD6E0; /* bottom-left */
   --peach: #FFE7B3; /* bottom-right */
+
+  /* Font family */
+  --font-sans: var(--font-inter);
 }
 
 /* Four-corner “sunrise horizon” background */
@@ -35,17 +34,22 @@
 /* Reusable UI helpers (glassmorphism + typography + accents) */
 @layer components {
   .glass-panel {
-    /* @apply is a Tailwind CSS directive */
-    @apply rounded-2xl backdrop-blur-md;
-    background: rgba(255,255,255,0.25);
-    border: 1px solid rgba(255,255,255,0.40);
+    /* softer glass for cards/sections */
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 1rem; /* 2xl */
     box-shadow: var(--shadow-glass);
   }
+
   .glass-strong {
-    /* @apply is a Tailwind CSS directive */
-    @apply rounded-2xl backdrop-blur-lg;
-    background: rgba(255,255,255,0.35);
-    border: 1px solid rgba(255,255,255,0.40);
+    /* stronger glass for prominent elements (Search) */
+    background: rgba(255,255,255,0.30);
+    border: 1px solid rgba(255,255,255,0.26);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1rem; /* 2xl */
     box-shadow: var(--shadow-glass);
   }
 
@@ -54,19 +58,57 @@
   .text-muted     { color: rgba(45,55,72,0.60); }
 
   .btn-primary {
-    /* @apply is a Tailwind CSS directive */
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium text-white transition-colors;
-    background-color: var(--color-fresh);
-  }
-  .btn-primary:hover {
-    background-color: rgba(114,198,119,0.80); /* secondary accent */
-  }
-
-  .link-accent {
-    color: var(--color-fresh);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border-radius: 0.75rem; /* xl */
     font-weight: 500;
+    color: #fff;
+    background-color: var(--color-fresh);
+    transition: background-color 150ms ease;
   }
-  .link-accent:hover {
-    color: rgba(114,198,119,0.80);
-  }
+  .btn-primary:hover { background-color: rgba(114,198,119,0.80); }
+
+  .link-accent { color: var(--color-fresh); font-weight: 500; }
+  .link-accent:hover { color: rgba(114,198,119,0.80); }
+}
+
+/* Range input styling (track + thumb) for the radius slider */
+.range-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  height: 1.5rem; /* reserve space for thumb */
+  display: block;
+}
+
+/* Track */
+.range-input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: rgba(45,55,72,0.20); /* muted charcoal */
+  border-radius: 9999px;
+}
+.range-input::-moz-range-track {
+  height: 4px;
+  background: rgba(45,55,72,0.20);
+  border-radius: 9999px;
+}
+
+/* Thumb */
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px; /* centers thumb on the 4px track */
+  height: 16px; width: 16px; border-radius: 9999px;
+  background: var(--color-fresh);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.range-input::-moz-range-thumb {
+  height: 16px; width: 16px; border-radius: 9999px;
+  background: var(--color-fresh);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }

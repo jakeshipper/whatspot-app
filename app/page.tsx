@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getRecommendations } from '@/lib/supabase'
 import SearchInterface from '@/components/SearchInterface'
-import { MapPin } from 'lucide-react'
 import type {
   Venue,
   SearchParams as ISearchParams,
@@ -29,11 +28,9 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('🚀 WHATSPOT: Starting to fetch recommendations!')
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Got user location:', position.coords)
           const newLocation: LatLng = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -41,8 +38,7 @@ export default function Home() {
           setSearchParams((prev) => ({ ...prev, location: newLocation }))
           fetchRecommendations({ ...searchParams, location: newLocation })
         },
-        (error) => {
-          console.error('Location error:', error)
+        () => {
           setLocationError('Using default location (Toronto)')
           fetchRecommendations()
         }
@@ -56,7 +52,6 @@ export default function Home() {
 
   const fetchRecommendations = async (params: ISearchParams = searchParams) => {
     setLoading(true)
-    console.log('Fetching with params:', params)
     try {
       const data = (await getRecommendations({
         location: params.location,
@@ -66,8 +61,6 @@ export default function Home() {
         category: params.category ?? undefined,
         query: params.query ?? undefined,
       })) as RecommendationsResponse
-
-      console.log('Data received:', data)
       setVenues(data?.results ?? [])
     } catch (error) {
       console.error('Error fetching recommendations:', error)
@@ -86,40 +79,36 @@ export default function Home() {
       }
     }
 
-    if (updates.query !== undefined) {
-      console.log('Search query:', updates.query)
-    }
-
     const newParams: ISearchParams = { ...searchParams, ...updates }
     setSearchParams(newParams)
     fetchRecommendations(newParams)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8">Whatspot</h1>
+    <div className="min-h-screen">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <h1 className="mb-8 text-center text-4xl font-bold text-primary">Whatspot</h1>
 
         {locationError && (
-          <div className="text-center text-sm text-gray-600 mb-4">{locationError}</div>
+          <div className="mb-4 text-center text-sm text-secondary">{locationError}</div>
         )}
 
-<SearchInterface
-  onSearch={handleSearchUpdate}
-  activeCategory={activeCategory}
-  location={searchParams.location}
-  radius_km={searchParams.radius_km}
-/>
+        <SearchInterface
+          onSearch={handleSearchUpdate}
+          activeCategory={activeCategory}
+          location={searchParams.location}
+          radius_km={searchParams.radius_km}
+        />
 
         <div className="mt-8">
           {loading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-              <p className="mt-2 text-gray-600">Finding perfect spots for you...</p>
+            <div className="py-8 text-center">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-[rgba(45,55,72,0.80)]" />
+              <p className="mt-2 text-secondary">Finding perfect spots for you...</p>
             </div>
           ) : (
             <div>
-              <h2 className="text-2xl font-semibold mb-4">
+              <h2 className="mb-4 text-2xl font-semibold text-primary">
                 {venues.length > 0 ? `Found ${venues.length} venues` : 'No venues found'}
               </h2>
 
@@ -129,13 +118,10 @@ export default function Home() {
                   const dist = typeof venue.distance_km === 'number' ? venue.distance_km : null
 
                   return (
-                    <div
-                      key={venue.id}
-                      className="glass-panel p-6 hover:shadow-xl transition-shadow"
-                    >
-                      <h3 className="text-xl font-semibold mb-2">{venue.name}</h3>
+                    <div key={venue.id} className="glass-panel p-6 transition-shadow hover:shadow-xl">
+                      <h3 className="mb-2 text-xl font-semibold">{venue.name}</h3>
 
-                      <div className="flex items-center gap-2 text-gray-600 mb-2">
+                      <div className="mb-2 flex items-center gap-2 text-secondary">
                         {venue.category && <span>{venue.category}</span>}
                         {venue.category && venue.price_level && <span>•</span>}
                         {venue.price_level && <span>{venue.price_level}</span>}
@@ -146,17 +132,19 @@ export default function Home() {
                       </div>
 
                       {typeof venue.rating === 'number' && (
-                        <div className="flex items-center gap-1 mb-2">
+                        <div className="mb-2 flex items-center gap-1">
                           <span className="text-yellow-500">⭐</span>
-                          <span>{venue.rating}</span>
+                          <span className="text-primary">{venue.rating}</span>
                           {typeof venue.review_count === 'number' && (
-                            <span className="text-gray-500 text-sm">({venue.review_count} reviews)</span>
+                            <span className="text-sm text-secondary">
+                              ({venue.review_count} reviews)
+                            </span>
                           )}
                         </div>
                       )}
 
                       {venue.justification && (
-                        <p className="text-gray-700 italic text-sm mb-3">{venue.justification}</p>
+                        <p className="mb-3 text-sm italic text-primary">{venue.justification}</p>
                       )}
 
                       <div className="mt-3 flex justify-end">
@@ -164,10 +152,9 @@ export default function Home() {
                           href={mapsUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="link-accent text-sm flex items-center gap-1"
+                          className="link-accent flex items-center gap-1 text-sm"
                           aria-label={`Get directions to ${venue.name}`}
                         >
-                          <MapPin className="w-4 h-4" />
                           Directions
                         </a>
                       </div>

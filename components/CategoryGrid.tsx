@@ -1,6 +1,5 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
 import { Coffee, Utensils, Wine, Croissant, Cake, Sandwich } from 'lucide-react'
 
 interface CategoryGridProps {
@@ -8,35 +7,37 @@ interface CategoryGridProps {
   activeCategory?: string | null
 }
 
-const categories = [
-  { name: 'Restaurants', icon: Utensils, color: 'bg-red-100 hover:bg-red-200', activeColor: 'bg-red-300 ring-2 ring-red-500' },
-  { name: 'Bars', icon: Wine, color: 'bg-purple-100 hover:bg-purple-200', activeColor: 'bg-purple-300 ring-2 ring-purple-500' },
-  { name: 'Coffee & Cafés', icon: Coffee, color: 'bg-brown-100 hover:bg-brown-200', activeColor: 'bg-amber-300 ring-2 ring-amber-500' },
-  { name: 'Brunch', icon: Croissant, color: 'bg-yellow-100 hover:bg-yellow-200', activeColor: 'bg-yellow-300 ring-2 ring-yellow-500' },
-  { name: 'Bakeries & Desserts', icon: Cake, color: 'bg-pink-100 hover:bg-pink-200', activeColor: 'bg-pink-300 ring-2 ring-pink-500' },
-  { name: 'Quick Bites', icon: Sandwich, color: 'bg-green-100 hover:bg-green-200', activeColor: 'bg-green-300 ring-2 ring-green-500' },
+const categories: Array<{ name: string; icon: React.ComponentType<{ className?: string }> }> = [
+  { name: 'Restaurants', icon: Utensils },
+  { name: 'Bars', icon: Wine },
+  { name: 'Coffee & Cafés', icon: Coffee },
+  { name: 'Brunch', icon: Croissant },
+  { name: 'Bakeries & Desserts', icon: Cake },
+  { name: 'Quick Bites', icon: Sandwich },
 ]
 
 export function CategoryGrid({ onCategorySelect, activeCategory }: CategoryGridProps) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {categories.map((category) => {
-        const Icon = category.icon
-        const isActive = activeCategory === category.name
-        
+      {categories.map(({ name, icon: Icon }) => {
+        const isActive = activeCategory === name
+
+        const baseTile =
+          'w-full h-24 sm:h-28 md:h-32 rounded-xl flex flex-col items-center justify-center gap-2 text-primary transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:#72c677]'
+        const activeTile = 'glass-strong ring-2 ring-[color:#72c677]'
+        const inactiveTile = 'glass-panel hover:shadow-xl'
+
         return (
-          <Card
-            key={category.name}
-            className={`p-6 cursor-pointer transition-all ${
-              isActive ? category.activeColor : category.color
-            }`}
-            onClick={() => onCategorySelect?.(category.name)}
+          <button
+            key={name}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => onCategorySelect?.(name)}
+            className={`${baseTile} ${isActive ? activeTile : inactiveTile}`}
           >
-            <div className="flex flex-col items-center text-center">
-              <Icon className="h-8 w-8 mb-2" />
-              <span className="text-sm font-medium">{category.name}</span>
-            </div>
-          </Card>
+            <Icon className="mb-1 h-7 w-7 md:h-8 md:w-8" />
+            <span className="text-center text-sm font-medium">{name}</span>
+          </button>
         )
       })}
     </div>
