@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useMemo as useReactMemo } from 'react'
+import { useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 
@@ -16,11 +16,11 @@ type Venue = {
 type Props = {
   center: { lat: number; lng: number }
   venues: Venue[]
-  radiusKm?: number // <-- pass the current search radius (km)
+  radiusKm?: number // search radius in km
   zoom?: number
 }
 
-// Inline SVG -> data URL to avoid broken default Leaflet images
+// Inline SVG -> data URL so we don't rely on external images
 const pinSvg = encodeURIComponent(`
 <svg width="46" height="46" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -46,7 +46,6 @@ const pinIcon = L.icon({
 })
 
 export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Props) {
-  // Prepare markers
   const markers = useMemo(
     () =>
       (venues ?? [])
@@ -81,10 +80,10 @@ export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Pro
         scrollWheelZoom={false}
         style={{ height: '100%', width: '100%' }}
       >
-        {/* Softer, modern basemap */}
+        {/* Softer basemap (CARTO Positron) */}
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; OpenStreetMap, &copy; CARTO'
         />
 
         {/* Shaded search radius */}
@@ -99,7 +98,7 @@ export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Pro
           }}
         />
 
-        {/* User pin (center) */}
+        {/* User pin */}
         <Marker position={[center.lat, center.lng]} icon={pinIcon}>
           <Popup>
             <div className="text-sm">
