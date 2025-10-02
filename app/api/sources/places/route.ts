@@ -112,6 +112,7 @@ export async function POST(req: Request) {
         'X-Goog-FieldMask': fieldMask,
       },
       body: JSON.stringify(body),
+      next: { revalidate: 900 },
     })
 
     if (!res.ok) {
