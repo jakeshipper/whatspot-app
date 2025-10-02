@@ -1,3 +1,4 @@
+// components/MapView.tsx
 'use client'
 
 import { useMemo } from 'react'
@@ -16,11 +17,11 @@ type Venue = {
 type Props = {
   center: { lat: number; lng: number }
   venues: Venue[]
-  radiusKm?: number // search radius in km
+  radiusKm?: number
   zoom?: number
 }
 
-// Inline SVG -> data URL so we don't rely on external images
+// Inline SVG pin -> data URL
 const pinSvg = encodeURIComponent(`
 <svg width="46" height="46" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -36,7 +37,6 @@ const pinSvg = encodeURIComponent(`
   </g>
 </svg>
 `);
-
 const pinIcon = L.icon({
   iconUrl: `data:image/svg+xml;charset=UTF-8,${pinSvg}`,
   iconSize: [32, 44],
@@ -80,13 +80,11 @@ export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Pro
         scrollWheelZoom={false}
         style={{ height: '100%', width: '100%' }}
       >
-        {/* Softer basemap (CARTO Positron) */}
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; OpenStreetMap, &copy; CARTO'
+          attribution="&copy; OpenStreetMap, &copy; CARTO"
         />
 
-        {/* Shaded search radius */}
         <Circle
           center={[center.lat, center.lng]}
           radius={radiusMeters}
@@ -98,7 +96,6 @@ export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Pro
           }}
         />
 
-        {/* User pin */}
         <Marker position={[center.lat, center.lng]} icon={pinIcon}>
           <Popup>
             <div className="text-sm">
@@ -108,7 +105,6 @@ export default function MapView({ center, venues, radiusKm = 5, zoom = 13 }: Pro
           </Popup>
         </Marker>
 
-        {/* Venue pins */}
         {markers.map((m) => (
           <Marker key={m.id} position={[m.lat, m.lng]} icon={pinIcon}>
             <Popup>
