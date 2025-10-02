@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { getRecommendations } from '@/lib/recommendations'
+import dynamic from 'next/dynamic'
 import SearchInterface from '@/components/SearchInterface'
 import VenueCard from '@/components/VenueCard'
 import SortControl from '@/components/SortControl'
-import MapView from '@/components/MapView'
+// Leaflet relies on the browser window; disable SSR for the map
+const MapView = dynamic(() => import('@/components/MapView'), { ssr: false })
 
 /** ---- Local types kept inline to avoid import/type drift ---- */
 type Budget = '$' | '$$' | '$$$' | '$$$$'
