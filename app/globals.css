@@ -9,8 +9,6 @@
   --color-success:  #48bb78;
   --color-error:    #e53e3e;
 
-  /* Radius token for shadcn/ui */
-  --radius: 0.75rem;
 
   /* Shadows */
   --shadow-glass: 0 10px 30px rgba(0,0,0,0.12);
@@ -25,9 +23,7 @@
   --font-sans: var(--font-inter);
 }
 
-html, body {
-  font-family: var(--font-sans);
-}
+/* keep existing font setup via body class in layout */
 
 /* Four-corner “sunrise horizon” background */
 .sunrise-bg {
