@@ -135,7 +135,7 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-4 py-8">
         <h2 className="mb-6 text-center text-3xl font-semibold text-primary">Search</h2>
 
         {locationError && (

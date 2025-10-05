@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.variable} min-h-screen sunrise-bg text-primary antialiased font-sans`}>
-        <header className="mx-auto w-full max-w-7xl px-4 pt-6">
+        <header className="mx-auto w-full max-w-4xl px-4 pt-6">
           <h1 className="text-center text-4xl font-bold">Whatspot</h1>
           {/* Top nav on desktop/tablet */}
           <div className="mt-6 hidden md:block">
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-28 md:pb-10">
+        <main className="mx-auto w-full max-w-4xl px-4 py-6 pb-28 md:pb-10">
           {children}
         </main>
 
